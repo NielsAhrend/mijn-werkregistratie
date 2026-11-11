@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#b71c2b">
+  <meta name="description" content="Snel je werkzaamheden bijhouden met een tik. Gratis, offline en op je eigen telefoon.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Werkregistratie">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>Mijn Werkregistratie</title>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="app-mark" aria-hidden="true">MW</div>
+        <div class="app-name"><strong>Mijn Werkregistratie</strong><span>Inzicht in je werkdag</span></div>
+        <button class="header-action" id="installButton" hidden type="button">Installeren</button>
+      </div>
+    </header>
+    <main id="mainContent" class="main-content">
+      <section id="screen-home" class="screen" aria-labelledby="homeHeading">
+        <div class="welcome">
+          <div><p class="eyebrow">SNELREGISTRATIE</p><h1 id="homeHeading">Waar ben je mee bezig?</h1><p class="muted">Een tik start de tijd. Een andere knop wisselt automatisch.</p></div>
+        </div>
+        <section class="timer-panel" aria-live="off">
+          <div class="timer-top"><span class="timer-label"><span class="live-indicator" id="liveIndicator"></span><span id="activeLabel">Geen actieve werkzaamheid</span></span><span class="timer-now" id="activeSince"></span></div>
+          <div id="elapsedTime" class="timer-digits">00:00:00</div>
+          <div class="timer-bottom"><span id="runningHint">Kies hieronder een werkzaamheid.</span><button id="stopButton" type="button" class="stop-button" disabled>Stop / pauze</button></div>
+        </section>
+        <div class="section-heading"><h2>Werkzaamheden</h2><button id="addTaskQuick" class="text-button" type="button">+ Toevoegen</button></div>
+        <div id="taskGrid" class="task-grid"></div>
+        <p class="helper">Tip: je hoeft de app niet open te houden. De begintijd wordt onthouden op dit toestel. Vergeet niet te stoppen aan het eind van je werkdag.</p>
+      </section>
+      <section id="screen-report" class="screen" hidden aria-labelledby="reportHeading">
+        <div class="section-intro"><p class="eyebrow">INZICHT</p><h1 id="reportHeading">Jouw tijdsoverzicht</h1><p class="muted">Een globale indicatie voor jezelf en je manager.</p></div>
+        <div class="segmented" role="group" aria-label="Periode">
+          <button type="button" data-period="day">Vandaag</button><button type="button" data-period="week">Deze week</button><button type="button" data-period="month">Deze maand</button>
+        </div>
+        <div class="stat-grid"><article class="stat-card"><span>Totaal</span><strong id="totalHours">0u 00m</strong></article><article class="stat-card"><span>Overdraagbaar</span><strong id="transferHours">0u 00m</strong></article></div>
+        <div class="report-card"><div class="card-title-row"><h2>Verdeling werkzaamheden</h2><span id="periodLabel" class="subtle"></span></div><div class="stack-bar" id="categoryBar" aria-label="Verdeling van de tijd"></div><div id="categoryLegend" class="category-legend"></div></div>
+        <div class="report-card"><div class="card-title-row"><h2>Tijd per werkzaamheid</h2></div><div id="taskBreakdown" class="breakdown"></div></div>
+        <div class="report-card"><div class="card-title-row"><h2>Laatste registraties</h2></div><p class="subtle smallest">Vergeten te stoppen? Pas een registratie hier eenvoudig aan.</p><div id="historyList" class="history-list"></div></div>
+        <button id="downloadCsv" class="primary-button full-width" type="button">Exporteer overzicht (CSV)</button>
+        <p class="helper">Deze registratie is bij benadering. Een onderdeel van je werk is vaak deels overdraagbaar; die tijd staat apart in het overzicht.</p>
+      </section>
+      <section id="screen-tasks" class="screen" hidden aria-labelledby="tasksHeading">
+        <div class="section-intro"><p class="eyebrow">BEHEER</p><h1 id="tasksHeading">Mijn werkzaamheden</h1><p class="muted">Voeg zelf onderwerpen toe en bepaal of ze overdraagbaar zijn.</p></div>
+        <button id="addTaskButton" type="button" class="primary-button full-width">+ Nieuwe werkzaamheid</button>
+        <div id="manageTaskList" class="manage-list"></div>
+        <p class="helper">Verwijderen betekent archiveren: de knop verdwijnt, maar je eerder geregistreerde uren blijven bewaard.</p>
+      </section>
+      <section id="screen-backup" class="screen" hidden aria-labelledby="backupHeading">
+        <div class="section-intro"><p class="eyebrow">JE GEGEVENS</p><h1 id="backupHeading">Back-up & instellingen</h1><p class="muted">Je gegevens staan alleen op deze telefoon, niet in de cloud.</p></div>
+        <div class="report-card"><h2>Maak regelmatig een back-up</h2><p class="muted">Bij een nieuwe telefoon, een gewiste browser of een andere website kunnen lokale gegevens verloren gaan. Bewaar dus af en toe een back-upbestand.</p><button id="exportBackup" class="primary-button full-width" type="button">Download back-up (JSON)</button></div>
+        <div class="report-card"><h2>Back-up terugzetten</h2><p class="muted">Zet je eerdere registraties en werkzaamheden terug vanuit een opgeslagen JSON-bestand. Je huidige gegevens worden dan vervangen.</p><label for="importBackup" class="secondary-button full-width pseudo-button">Kies een back-upbestand</label><input id="importBackup" type="file" accept=".json,application/json" hidden></div>
+        <div class="report-card"><h2>App op beginscherm</h2><p class="muted">Open de gepubliceerde HTTPS-website met Chrome. Tik op het menu en kies 'App installeren' of 'Toevoegen aan startscherm'. Na installatie kun je ook offline registreren.</p><button id="installFromSettings" class="secondary-button full-width" type="button" hidden>Installeer deze app</button></div>
+        <div class="report-card danger-card"><h2>Gegevens wissen</h2><p class="muted">Wil je helemaal opnieuw beginnen? Maak eerst een back-up.</p><button id="resetAll" type="button" class="danger-button">Wis alle registraties en onderwerpen</button></div>
+        <p class="helper">Privacy: er is geen account, geen tracking en geen serveropslag. Data blijven op het apparaat en in de browser waarin je deze app gebruikt.</p>
+      </section>
+    </main>
+    <nav class="bottom-nav" aria-label="Hoofdnavigatie">
+      <button data-screen="home" type="button" class="nav-item active"><span class="nav-icon" aria-hidden="true">&#9654;</span><span>Start</span></button>
+      <button data-screen="report" type="button" class="nav-item"><span class="nav-icon" aria-hidden="true">&#9636;</span><span>Overzicht</span></button>
+      <button data-screen="tasks" type="button" class="nav-item"><span class="nav-icon" aria-hidden="true">&#9881;</span><span>Onderwerpen</span></button>
+      <button data-screen="backup" type="button" class="nav-item"><span class="nav-icon" aria-hidden="true">&#8681;</span><span>Back-up</span></button>
+    </nav>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+  <dialog id="taskDialog" class="edit-dialog">
+    <form id="taskForm" method="dialog">
+      <div class="dialog-head"><h2 id="taskDialogTitle">Werkzaamheid toevoegen</h2><button id="cancelTask" class="close-button" type="button" aria-label="Sluiten">&times;</button></div>
+      <label for="taskName">Naam van de werkzaamheid</label><input id="taskName" name="taskName" maxlength="54" required placeholder="Bijv. goederen verzamelen" autocomplete="off">
+      <label for="taskCategory">Soort werkzaamheid</label><select id="taskCategory" name="taskCategory"><option value="transfer">Overdraagbaar</option><option value="partial">Deels overdraagbaar</option><option value="special">Specialistische kennis</option></select>
+      <label for="taskIcon">Icoon</label><select id="taskIcon" name="taskIcon"></select>
+      <div class="dialog-actions"><button id="discardTask" type="button" class="secondary-button">Annuleren</button><button class="primary-button" type="submit">Opslaan</button></div>
+    </form>
+  </dialog>
+  <dialog id="editSessionDialog" class="edit-dialog">
+    <form id="sessionForm" method="dialog"><div class="dialog-head"><h2>Registratie corrigeren</h2><button id="cancelSession" class="close-button" type="button" aria-label="Sluiten">&times;</button></div><p id="sessionHelp" class="muted"></p><label for="sessionMinutes">Tijdsduur in minuten</label><input id="sessionMinutes" inputmode="numeric" type="number" min="1" max="600" step="1" required><div class="dialog-actions"><button id="deleteSession" type="button" class="danger-button">Verwijderen</button><button type="submit" class="primary-button">Opslaan</button></div></form>
+  </dialog>
+  <script defer src="app.js"></script>
+</body>
+</html>
